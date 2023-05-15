@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-05-15T12:44:19.863Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36" etag="oZ3TqWj_jJxwkSM_eKCg" version="21.2.9" type="github">
+<mxfile host="app.diagrams.net" modified="2023-05-15T13:13:29.647Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36" etag="vbVjz0tUyqq4g6iuVhTv" version="21.2.9" type="github">
   <diagram id="-oPqAkTAHKP7xbguGdnS" name="Page-1">
-    <mxGraphModel dx="3434" dy="1407" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2336" dy="815" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -376,9 +376,6 @@
         <mxCell id="TBSbjotnk0CT5dtNG1RA-23" value="RI-2" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="88" y="284.37" width="50" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="TBSbjotnk0CT5dtNG1RA-24" value="RI-5" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="1005" y="40" width="50" height="30" as="geometry" />
-        </mxCell>
         <mxCell id="ifH_SZ0rBkrmAZITVyhP-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.421;entryY=0.005;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;shape=link;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="TBSbjotnk0CT5dtNG1RA-25" target="TBSbjotnk0CT5dtNG1RA-0" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -461,8 +458,8 @@
             <mxPoint x="930" y="140" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ifH_SZ0rBkrmAZITVyhP-26" value="&lt;div align=&quot;left&quot;&gt;RI-1: Um método de pagamento substituto não pode ter um método de pagamento substituto.&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;RI-2: Clientes têm de introduzir mais do que um método de pagamento de uma lista conhecida à priori.&lt;br&gt;&lt;/div&gt;&lt;div&gt;RI-3: Os operadores do sistema não podem ver os nomes dos clientes.&lt;/div&gt;&lt;div&gt;RI-4: Uma Encomenda torna-se numa venda após ser paga.&lt;/div&gt;&lt;div&gt;RI-5: Um Produto pode ou não ter código EAN.&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="-15" y="800" width="610" height="90" as="geometry" />
+        <mxCell id="ifH_SZ0rBkrmAZITVyhP-26" value="&lt;div align=&quot;left&quot;&gt;RI-1: Um método de pagamento substituto não pode ter um método de pagamento substituto.&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;RI-2: Clientes têm de introduzir mais do que um método de pagamento de uma lista conhecida à priori.&lt;br&gt;&lt;/div&gt;&lt;div&gt;RI-3: Os operadores do sistema não podem ver os nomes dos clientes.&lt;/div&gt;&lt;div&gt;RI-4: Uma Encomenda torna-se numa venda após ser paga.&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="-15" y="810" width="570" height="70" as="geometry" />
         </mxCell>
         <mxCell id="ifH_SZ0rBkrmAZITVyhP-28" value="RI-3" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="-50" y="114.38" width="50" height="30" as="geometry" />
