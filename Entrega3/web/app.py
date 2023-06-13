@@ -89,14 +89,14 @@ def customer_create():
                         FROM customer 
                         ORDER BY cust_no DESC LIMIT 1)+1,
                         %(name)s,
-                        %(email)s, 
+                        %(email)s
                     """
                 params = {"name": name, "email": email}
                 if phone != "":
-                    query += "%(phone)s, "
+                    query += ", %(phone)s"
                     params["phone"] = phone
                 if address != "":
-                    query += "%(address)s"
+                    query += ", %(address)s"
                     params["address"] = address
                 query += ");"
                 cur.execute(query, params)
