@@ -15,7 +15,7 @@ from psycopg_pool import ConnectionPool
 
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://me:me@postgres/me")
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://me:me@localhost/me")
 
 pool = ConnectionPool(conninfo=DATABASE_URL)
 # the pool starts connecting immediately.
@@ -68,6 +68,58 @@ def customer_index():
         return jsonify(customers)
 
     return render_template("customer/index.html", customers=customers)
+
+
+@app.route("/customers/create", methods=("POST", "GET"))
+def customer_create():
+    """Create new customer."""
+
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        phone = request.form["phone"]
+        address = request.form["address"]
+
+        with pool.connection() as conn:
+            with conn.cursor(row_factory=namedtuple_row) as cur:
+                query = """
+                    INSERT INTO customer
+                    VALUES(
+                        (SELECT cust_no 
+                        FROM customer 
+                        ORDER BY cust_no DESC LIMIT 1)+1,
+                        %(name)s,
+                        %(email)s, 
+                    """
+                params = {"name": name, "email": email}
+                if phone != "":
+                    query += "%(phone)s, "
+                    params["phone"] = phone
+                if address != "":
+                    query += "%(address)s"
+                    params["address"] = address
+                query += ");"
+                cur.execute(query, params)
+            conn.commit()
+        return redirect(url_for("customer_index"))
+    else:
+        return render_template("customer/create.html")
+
+@app.route("/customers/<cust_no>/delete", methods=("POST",))
+def customer_delete(cust_no):
+    """Delete the customer."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute(
+                """
+                DELETE FROM customer
+                WHERE cust_no = %(cust_no)s;
+                """,
+                {"cust_no": cust_no},
+            )
+        conn.commit()
+    return redirect(url_for("customer_index"))
 
 @app.route("/ping", methods=("GET",))
 def ping():

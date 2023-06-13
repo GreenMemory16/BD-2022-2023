@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Customer Creation{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form action = "{{ url_for('customer_create', name=name, email=email, phone=phone, address=address) }}" method="post">
+    <label for="name">Customer Name</label>
+    <input name="name" id="name" type="text" required minlength="1" maxlength="79">
+    <label for="email">Email</label>
+    <input name="email" id="email" type="email" required minlength="5" maxlength="253">
+	<label for="phone">Phone</label>
+    <input name="phone" id="phone" type="phone" minlength="5" maxlength="253">
+	<label for="address">Address</label>
+    <input name="address" id="address" type="text" minlength="1" maxlength="254">
+    <input type="submit" value="Create">
+</form>
+{% endblock %}

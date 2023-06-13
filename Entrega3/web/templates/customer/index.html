@@ -4,6 +4,8 @@
   <h1>{% block title %}Customers{% endblock %}</h1>
 {% endblock %}
 
+<a href="{{ url_for('customer_create') }}">Add new customer</a>
+
 {% block content %}
   {% for cust in customers %}
     <article class="post">
@@ -14,6 +16,9 @@
         </div>
       </header>
       <p class="body">€ {{ cust['email'] }}</p>
+      <form action="{{ url_for('customer_delete', cust_no=cust['cust_no']) }}" method="post">
+        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+      </form>
     </article>
     {% if not loop.last %}
       <hr>
