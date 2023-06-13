@@ -44,6 +44,9 @@ log = app.logger
 
 
 @app.route("/", methods=("GET",))
+def main_page():
+    return render_template("main.html")
+
 @app.route("/customers", methods=("GET",))
 def customer_index():
     """Show all the customers, most recent first."""

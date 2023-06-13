@@ -1,0 +1,12 @@
+<!doctype html>
+<title>Main Page</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<nav>
+	<h1><a href="/">Menu</a></h1>
+</nav>
+  <section class="content">
+    <ul>
+		<li><a href="{{ url_for('customer_index') }}">Customers</a>
+		<li><a href="{{ url_for('customer_create') }}">Create Customer</a>
+	</ul>
+  </section>
