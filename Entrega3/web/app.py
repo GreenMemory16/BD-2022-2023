@@ -124,6 +124,49 @@ def customer_delete(cust_no):
         conn.commit()
     return redirect(url_for("customer_index"))
 
+@app.get("/products")
+def product_index():
+    """Show all the products, most recent first."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            products = cur.execute(
+                """
+                SELECT sku, name, description, price
+                FROM product
+                ORDER BY name;
+                """,
+                {},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    # API-like response is returned to customers that request JSON explicitly (e.g., fetch)
+    if (
+        request.accept_mimetypes["application/json"]
+        and not request.accept_mimetypes["text/html"]
+    ):
+        return jsonify(products)
+
+    return render_template("product/index.html", products=products)
+
+@app.post("/products/<sku>/update")
+def product_price(sku):
+    """Change the product price."""
+    price = request.form["price"]
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute(
+                """
+                UPDATE product
+                SET price=%(price)s
+                WHERE sku = %(sku)s;
+                """,
+                {"price": price, "sku": sku,}
+            )
+        conn.commit()
+    return redirect(url_for("product_index"))
+
 @app.route("/ping", methods=("GET",))
 def ping():
     log.debug("ping!")
