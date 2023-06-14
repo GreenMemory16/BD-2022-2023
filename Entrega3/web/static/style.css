@@ -131,3 +131,7 @@ html {
     align-self: start;
     min-width: 10em;
   }
+
+  .update_delete_buttons form {
+    display: inline;
+  }

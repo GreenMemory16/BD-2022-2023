@@ -138,6 +138,24 @@ def customer_create():
     else:
         return render_template("customer/create.html")
 
+#product info
+@app.route("/products/<sku>", methods=("POST", "GET"))
+def product_info(sku):
+    """Show product info."""
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            prod = cur.execute(
+                """
+                SELECT sku, name, description, price, ean
+                FROM product
+                WHERE sku = %(sku)s;
+                """,
+                {"sku": sku},
+            ).fetchone()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    return render_template("product/update.html", prod=prod)
+
 @app.route("/customers/<cust_no>", methods=("POST", "GET"))
 def customer_info(cust_no):
     """Show customer info."""
@@ -154,6 +172,7 @@ def customer_info(cust_no):
             log.debug(f"Found {cur.rowcount} rows.")
 
     return render_template("customer/update.html", cust=cust)
+
 
 @app.route("/customers/<cust_no>/delete", methods=("POST",))
 def customer_delete(cust_no):
@@ -209,6 +228,46 @@ def customer_delete(cust_no):
         conn.commit()
     return redirect(url_for("customer_index"))
 
+
+@app.route("/products/<sku>/delete", methods=("POST",))
+def product_delete(sku):
+    """Delete the product."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute(
+                """
+                DELETE FROM product
+                WHERE sku = %(sku)s;
+                """,
+                {"sku": sku},
+            )
+        conn.commit()
+    return redirect(url_for("product_index"))
+
+#product update function 
+@app.post("/products/<sku>/update")
+def product_update(sku):
+    """Update the product."""
+
+    name = request.form["name"]
+    description = request.form["description"]
+    price = request.form["price"]
+    ean = request.form["ean"]
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute(
+                """
+                UPDATE product
+                SET sku = %(sku)s, name=%(name)s, description=%(description)s, price=%(price)s, ean=%(ean)s
+                WHERE sku = %(sku)s;
+                """,
+                {"name": name, "description": description, "price": price, "ean": ean, "sku": sku,}
+            )
+        conn.commit()
+    return redirect(url_for("product_index"))
+
 @app.get("/products")
 def product_index():
     """Show all the products, most recent first."""
@@ -217,7 +276,7 @@ def product_index():
         with conn.cursor(row_factory=namedtuple_row) as cur:
             products = cur.execute(
                 """
-                SELECT sku, name, description, price
+                SELECT sku, name, description, price, ean
                 FROM product
                 ORDER BY name;
                 """,
@@ -233,6 +292,7 @@ def product_index():
         return jsonify(products)
 
     return render_template("product/index.html", products=products)
+
 
 @app.post("/products/<sku>/price")
 def product_price(sku):
