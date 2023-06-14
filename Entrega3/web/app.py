@@ -108,6 +108,23 @@ def customer_create():
     else:
         return render_template("customer/create.html")
 
+@app.route("/customers/<cust_no>", methods=("POST", "GET"))
+def customer_info(cust_no):
+    """Show customer info."""
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cust = cur.execute(
+                """
+                SELECT cust_no, name, email
+                FROM customer
+                WHERE cust_no = %(cust_no)s;
+                """,
+                {"cust_no": cust_no},
+            ).fetchone()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    return render_template("customer/update.html", cust=cust)
+
 @app.route("/customers/<cust_no>/delete", methods=("POST",))
 def customer_delete(cust_no):
     """Delete the customer."""
@@ -149,7 +166,7 @@ def product_index():
 
     return render_template("product/index.html", products=products)
 
-@app.post("/products/<sku>/update")
+@app.post("/products/<sku>/price")
 def product_price(sku):
     """Change the product price."""
     price = request.form["price"]
@@ -166,6 +183,31 @@ def product_price(sku):
             )
         conn.commit()
     return redirect(url_for("product_index"))
+
+@app.get("/supplier")
+def supplier_index():
+    """Show all the products, most recent first."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            supplier = cur.execute(
+                """
+                SELECT tin, name, address, sku
+                FROM supplier
+                ORDER BY name;
+                """,
+                {},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    # API-like response is returned to customers that request JSON explicitly (e.g., fetch)
+    if (
+        request.accept_mimetypes["application/json"]
+        and not request.accept_mimetypes["text/html"]
+    ):
+        return jsonify(supplier)
+
+    return render_template("supplier/index.html", supplier=supplier)
 
 @app.route("/ping", methods=("GET",))
 def ping():

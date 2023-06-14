@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+<h1>{% block title %}Suppliers{% endblock %}</h1>
+
+{% block content %}
+  {% for sup in supplier %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ sup['name'] }}</h1>
+          <div class="about">TIN {{ sup['tin'] }}</div>
+        </div>
+      </header>
+      <p class="body">{{ sup['address'] }}</p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
