@@ -13,7 +13,7 @@ cur = conn.cursor()
 # Example SELECT query
 start_time = time.time()
 
-cur.execute("SELECT order_no FROM orders JOIN contains USING (order_no) JOIN product USING (SKU) WHERE price > 50 AND EXTRACT(YEAR FROM date) = 2023")
+cur.execute("EXPLAIN SELECT order_no FROM orders JOIN contains USING (order_no) JOIN product USING (SKU) WHERE price > 50 AND EXTRACT(YEAR FROM date) = 2023;")
 
 # Fetch all rows
 rows = cur.fetchall()
