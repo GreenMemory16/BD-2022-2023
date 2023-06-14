@@ -163,6 +163,44 @@ def customer_delete(cust_no):
         with conn.cursor(row_factory=namedtuple_row) as cur:
             cur.execute(
                 """
+                WITH deleted_orders AS (
+                SELECT order_no
+                FROM orders
+                WHERE cust_no = %(cust_no)s
+                )
+                DELETE FROM process
+                WHERE order_no IN (SELECT order_no FROM deleted_orders);
+                """,
+                {"cust_no": cust_no},
+            )
+            cur.execute(
+                """
+                WITH deleted_orders AS (
+                SELECT order_no
+                FROM orders
+                WHERE cust_no = %(cust_no)s
+                )
+                DELETE FROM contains
+                WHERE order_no IN (SELECT order_no FROM deleted_orders);
+                """,
+                {"cust_no": cust_no},
+            )
+            cur.execute(
+                """
+                DELETE FROM pay
+                WHERE cust_no = %(cust_no)s;
+                """,
+                {"cust_no": cust_no},
+            )
+            cur.execute(
+                """
+                DELETE FROM orders
+                WHERE cust_no = %(cust_no)s;
+                """,
+                {"cust_no": cust_no},
+            )
+            cur.execute(
+                """
                 DELETE FROM customer
                 WHERE cust_no = %(cust_no)s;
                 """,
