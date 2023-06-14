@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Customer Creation{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form action = "{{ url_for('product_create') }}" method="post">
+    <label for="sku">SKU</label>
+    <input name="sku" id="sku" type="text" required minlength="1" maxlength="29">
+    <label for="name">Product Name</label>
+    <input name="name" id="name" type="text" required minlength="1" maxlength="79">
+    <label for="description">Description</label>
+    <input name="description" id="description" type="text" required minlength="1" maxlength="253">
+	  <label for="price">Price</label>
+    <input name="price" id="price" type="number" min="1" step="any">
+	  <label for="ean">EAN</label>
+    <input name="ean" id="ean" type="number" min="1" maxlength="9999999999999">
+    <input type="submit" value="Create">
+</form>
+{% endblock %}

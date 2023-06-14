@@ -72,6 +72,36 @@ def customer_index():
 
     return render_template("customer/index.html", customers=customers)
 
+# funciton to create a new product
+@app.route("/products/create", methods=("POST", "GET"))
+def product_create():
+    """Create new product."""
+
+    if request.method == "POST":
+        sku = request.form["sku"]
+        name = request.form["name"]
+        description = request.form["description"]
+        price = request.form["price"]
+        ean = request.form["ean"]
+
+        with pool.connection() as conn:
+            with conn.cursor(row_factory=namedtuple_row) as cur:
+                query = """
+                    INSERT INTO product
+                    VALUES(
+                        %(sku)s,
+                        %(name)s,
+                        %(description)s,
+                        %(price)s,
+                        %(ean)s
+                    );
+                """
+                params = {"sku": sku, "name": name, "description": description, "price": price, "ean": ean}
+                cur.execute(query, params)
+            conn.commit()
+        return redirect(url_for("product_index"))
+    else:
+        return render_template("product/create.html")
 
 @app.route("/customers/create", methods=("POST", "GET"))
 def customer_create():
