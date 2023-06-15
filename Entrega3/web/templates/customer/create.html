@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Customer Registration{% endblock %}</h1>
-{% endblock %}
+<h1>{% block title %}Customer Registration{% endblock %}</h1>
 
 {% block content %}
 <form action = "{{ url_for('customer_create') }}" method="post">
