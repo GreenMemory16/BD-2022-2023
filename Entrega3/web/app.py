@@ -267,20 +267,18 @@ def product_delete(sku):
 def product_update(sku):
     """Update the product."""
 
-    name = request.form["name"]
     description = request.form["description"]
     price = request.form["price"]
-    ean = request.form["ean"]
 
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
             cur.execute(
                 """
                 UPDATE product
-                SET sku = %(sku)s, name=%(name)s, description=%(description)s, price=%(price)s, ean=%(ean)s
+                SET description = %(description)s, price = %(price)s
                 WHERE sku = %(sku)s;
                 """,
-                {"name": name, "description": description, "price": price, "ean": ean, "sku": sku,}
+                {"description": description, "price": price, "sku": sku}
             )
         conn.commit()
     return redirect(url_for("product_index"))
