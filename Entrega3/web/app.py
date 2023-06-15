@@ -361,6 +361,25 @@ def product_update(sku):
         conn.commit()
     return redirect(url_for("product_index"))
 
+@app.route("/customers/<cust_no>/pay", methods=("POST", "GET"))
+def list_unpaid_orders(cust_no):
+    """List unpaid orders made by this customer."""
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            orders = cur.execute(
+                """
+                SELECT o.order_no, o.date
+                FROM orders o
+                LEFT JOIN pay p ON o.order_no = p.order_no
+                WHERE o.cust_no = %(cust_no)s
+                AND p.order_no IS NULL;
+                """,
+                {"cust_no": cust_no},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    return render_template("order/pay.html", orders=orders)
+
 @app.get("/products")
 def product_index():
     """Show all the products, most recent first."""

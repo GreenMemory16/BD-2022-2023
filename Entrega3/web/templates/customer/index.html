@@ -14,6 +14,7 @@
       <p class="body">{{ cust['email'] }}</p>
       <a class="action" href="{{ url_for('customer_info', cust_no=cust['cust_no']) }}">Edit</a>
       <a class="action" href="{{ url_for('order_create', cust_no=cust['cust_no']) }}">Add Order</a>
+      <a class="action" href="{{ url_for('list_unpaid_orders', cust_no=cust['cust_no']) }}">Pay Order</a>
     </article>
     {% if not loop.last %}
       <hr>
