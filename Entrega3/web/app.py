@@ -98,6 +98,10 @@ def product_create():
                         %(ean)s
                     );
                 """
+                if not description:
+                    description = None
+                if not ean:
+                    ean = None
                 params = {"sku": sku, "name": name, "description": description, "price": price, "ean": ean}
                 cur.execute(query, params)
             conn.commit()
@@ -177,16 +181,16 @@ def customer_create():
                         FROM customer 
                         ORDER BY cust_no DESC LIMIT 1)+1,
                         %(name)s,
-                        %(email)s
+                        %(email)s,
+                        %(phone)s,
+                        %(address)s
+                        );
                     """
-                params = {"name": name, "email": email}
-                if phone != "":
-                    query += ", %(phone)s"
-                    params["phone"] = phone
-                if address != "":
-                    query += ", %(address)s"
-                    params["address"] = address
-                query += ");"
+                if not phone:
+                    phone = None
+                if not address:
+                    address = None
+                params = {"name": name, "email": email, "phone": phone, "address": address}
                 cur.execute(query, params)
             conn.commit()
         return redirect(url_for("customer_index"))
@@ -218,7 +222,7 @@ def customer_info(cust_no):
         with conn.cursor(row_factory=namedtuple_row) as cur:
             cust = cur.execute(
                 """
-                SELECT cust_no, name, email
+                SELECT cust_no, name, email, phone, address
                 FROM customer
                 WHERE cust_no = %(cust_no)s;
                 """,
@@ -393,7 +397,10 @@ def supplier_create():
         date = request.form["date"]
 
         # Convert the date string to a datetime object
-        date_obj = datetime.strptime(date, "%Y-%m-%d")
+        if date:
+            date_obj = datetime.strptime(date, "%Y-%m-%d")
+        else:
+            date_obj = None
 
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:

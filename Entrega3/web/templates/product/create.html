@@ -10,10 +10,10 @@
     <input name="sku" id="sku" type="text" required minlength="1" maxlength="29">
     <label for="name">Product Name</label>
     <input name="name" id="name" type="text" required minlength="1" maxlength="79">
-    <label for="description">Description</label>
-    <input name="description" id="description" type="text" required minlength="1" maxlength="253">
 	  <label for="price">Price</label>
-    <input name="price" id="price" type="number" min="1" step="any">
+    <input name="price" id="price" type="number" required min="1" step="any">
+    <label for="description">Description</label>
+    <input name="description" id="description" type="text" maxlength="253">
 	  <label for="ean">EAN</label>
     <input name="ean" id="ean" type="number" min="1" maxlength="9999999999999">
     <input type="submit" value="Create">
