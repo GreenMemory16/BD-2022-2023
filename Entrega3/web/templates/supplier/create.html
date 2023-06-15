@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Supplier Registration{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form action = "{{ url_for('supplier_create') }}" method="post">
+    <label for="tin">TIN</label>
+    <input name="tin" id="tin" type="text" required minlength="1" maxlength="20">
+    <label for="name">Name</label>
+    <input name="name" id="name" type="text" required minlength="1" maxlength="200">
+	  <label for="address">Address</label>
+    <input name="address" id="address" type="text" minlength="1" maxlength="256">
+    <label for="sku">SKU</label>
+    <input name="sku" id="sku" type="text" minlength="1" maxlength="25">
+    <label for="date">Date</label>
+    <input name="date" id="date" type="date" required>
+
+    <input type="submit" value="Create">
+</form>
+{% endblock %}

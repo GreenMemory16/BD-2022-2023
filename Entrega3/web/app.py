@@ -13,6 +13,8 @@ from flask import url_for
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
+from datetime import datetime
+
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://me:me@localhost/me")
@@ -260,7 +262,7 @@ def product_delete(sku):
         conn.commit()
     return redirect(url_for("product_index"))
 
-#product update function 
+
 @app.post("/products/<sku>/update")
 def product_update(sku):
     """Update the product."""
@@ -326,6 +328,34 @@ def product_price(sku):
             )
         conn.commit()
     return redirect(url_for("product_index"))
+
+    
+@app.route("/supplier/create", methods=("POST", "GET"))
+def supplier_create():
+    """Create a new supplier."""
+
+    if request.method == "POST":
+        tin = request.form["tin"]
+        name = request.form["name"]
+        address = request.form["address"]
+        sku = request.form["sku"]
+        date = request.form["date"]
+
+        # Convert the date string to a datetime object
+        date_obj = datetime.strptime(date, "%Y-%m-%d")
+
+        with pool.connection() as conn:
+            with conn.cursor(row_factory=namedtuple_row) as cur:
+                query = """
+                    INSERT INTO supplier (tin, name, address, sku, date)
+                    VALUES (%(tin)s, %(name)s, %(address)s, %(sku)s, %(date)s);
+                """
+                params = {"tin": tin, "name": name, "address": address, "sku": sku, "date": date_obj}
+                cur.execute(query, params)
+            conn.commit()
+        return redirect(url_for("supplier_index"))
+    else:
+        return render_template("supplier/create.html")
 
 @app.get("/supplier")
 def supplier_index():
