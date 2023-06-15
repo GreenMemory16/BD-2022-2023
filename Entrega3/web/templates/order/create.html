@@ -5,12 +5,58 @@
 {% endblock %}
 
 {% block content %}
-<form action = "{{ url_for('order_create') }}" method="post">
-    <label for="cust_no">Customer Number</label>
-    <input name="cust_no" id="cust_no" type="number" required min="1" step="any">
+<form action = "{{ url_for('order_create', cust_no=cust_no) }}" method="post">
     <label for="date">Date</label>
     <input name="date" id="date" type="date" required>
 
+    <h2>Add Products</h2>
+    <label for="sku">SKU</label>
+    <input name="sku" id="sku" type="text" required>
+    <label for="quantity">Quantity</label>
+    <input name="quantity" id="quantity" type="number" required>
+    <button type="button" onclick="addProduct()">Add Product</button>
+    
+
+    <hr>
+    <hr>
     <input type="submit" value="Create">
 </form>
+
+<script>
+  function addProduct() {
+      var sku = document.getElementById("sku").value;
+      var quantity = document.getElementById("quantity").value;
+
+      // Perform additional logic if needed, e.g., validate inputs
+
+      // Append the product details to a list or perform other actions
+      var payload = {
+            sku: sku,
+            quantity: quantity
+      };
+
+        // Send the AJAX request to the server
+      fetch('/add_product', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+            // Handle the response from the server
+          console.log(data);
+            // You can perform additional actions here, such as updating the UI
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+
+      // Clear the input fields
+      document.getElementById("sku").value = "";
+      document.getElementById("quantity").value = "";
+  }
+</script>
+
 {% endblock %}

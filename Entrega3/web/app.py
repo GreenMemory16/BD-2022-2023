@@ -135,12 +135,14 @@ def order_index():
     return render_template("order/index.html", orders=orders)
 
 
-@app.route("/order/create", methods=("POST", "GET"))
-def order_create():
+
+
+
+@app.route("/customer/<cust_no>/create", methods=("POST", "GET"))
+def order_create(cust_no):
     """Create new order."""
 
     if request.method == "POST":
-        cust_no = request.form["cust_no"]
         date = request.form["date"]
 
         with pool.connection() as conn:
@@ -153,7 +155,7 @@ def order_create():
                         ORDER BY order_no DESC LIMIT 1)+1,
                         %(cust_no)s,
                         %(date)s
-                    )
+                    );
                 """
                 params = {"cust_no": cust_no, "date": date}
                 cur.execute(query, params)
@@ -384,6 +386,39 @@ def product_price(sku):
         conn.commit()
     return redirect(url_for("product_index"))
 
+#add a product to an order
+@app.route("/order/<order_no>/add", methods=("POST", "GET"))
+def order_add(order_no):
+    """Add a product to an order."""
+
+    if request.method == "POST":
+        sku = request.form["sku"]
+        quantity = request.form["quantity"]
+
+        with pool.connection() as conn:
+            with conn.cursor(row_factory=namedtuple_row) as cur:
+                query = """
+                    INSERT INTO contains (order_no, sku, quantity)
+                    VALUES (%(order_no)s, %(sku)s, %(quantity)s);
+                """
+                params = {"order_no": order_no, "sku": sku, "quantity": quantity}
+                cur.execute(query, params)
+            conn.commit()
+        return redirect(url_for("order_info", order_no=order_no))
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            products = cur.execute(
+                """
+                SELECT sku, name, description, price, ean
+                FROM product
+                ORDER BY name;
+                """,
+                {},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    return render_template("order/add.html", products=products, order_no=order_no)
     
 @app.route("/supplier/create", methods=("POST", "GET"))
 def supplier_create():
