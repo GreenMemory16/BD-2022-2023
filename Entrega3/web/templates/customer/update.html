@@ -8,7 +8,10 @@
 	  <div class="about">Customer number {{ cust['cust_no'] }}</div>
 	</div>
 </header>
-  <p class="body">{{ cust['email'] }}</p>
+  <hr>
+  <p class="body">Email: {{ cust['email'] }}</p>
+  <p class="body">Phone: {{ cust['phone'] }}</p>
+  <p class="body">Address: {{ cust['address'] }}</p>
   <hr>
   <form action="{{ url_for('customer_delete', cust_no=cust['cust_no']) }}" method="post">
 	  <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
