@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Order Creation{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form action = "{{ url_for('order_create') }}" method="post">
+    <label for="cust_no">Customer Number</label>
+    <input name="cust_no" id="cust_no" type="number" required min="1" step="any">
+    <label for="date">Date</label>
+    <input name="date" id="date" type="date" required>
+
+    <input type="submit" value="Create">
+</form>
+{% endblock %}

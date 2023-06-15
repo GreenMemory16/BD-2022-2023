@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+<h1>{% block title %}Customers{% endblock %}</h1>
+
+{% block content %}
+  {% for ord in orders %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>Order {{ ord['order_no'] }}</h1>
+          <div class="about">Order number {{ ord['order_no'] }}</div>
+        </div>
+      </header>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

@@ -105,6 +105,59 @@ def product_create():
     else:
         return render_template("product/create.html")
 
+@app.route("/orders", methods=("GET",))
+def order_index():
+    """Show all the orders"""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            orders = cur.execute(
+                """
+                SELECT order_no, cust_no, date
+                FROM orders
+                ORDER BY order_no ASC;
+                """,
+                {},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    # API-like response is returned to orders that request JSON explicitly (e.g., fetch)
+    if (
+        request.accept_mimetypes["application/json"]
+        and not request.accept_mimetypes["text/html"]
+    ):
+        return jsonify(orders)
+
+    return render_template("order/index.html", orders=orders)
+
+
+@app.route("/order/create", methods=("POST", "GET"))
+def order_create():
+    """Create new order."""
+
+    if request.method == "POST":
+        cust_no = request.form["cust_no"]
+        date = request.form["date"]
+
+        with pool.connection() as conn:
+            with conn.cursor(row_factory=namedtuple_row) as cur:
+                query = """
+                    INSERT INTO orders
+                    VALUES(
+                        (SELECT order_no
+                        FROM orders
+                        ORDER BY order_no DESC LIMIT 1)+1,
+                        %(cust_no)s,
+                        %(date)s
+                    )
+                """
+                params = {"cust_no": cust_no, "date": date}
+                cur.execute(query, params)
+            conn.commit()
+        return redirect(url_for("order_index"))
+    else:
+        return render_template("order/create.html")
+
 @app.route("/customers/create", methods=("POST", "GET"))
 def customer_create():
     """Create new customer."""
