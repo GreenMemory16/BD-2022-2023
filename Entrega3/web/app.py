@@ -410,17 +410,27 @@ def list_unpaid_orders(cust_no):
 def product_index():
     """Show all the products, most recent first."""
 
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    per_page = 10
+
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute("SELECT COUNT(*) FROM product;")
+            product_count = cur.fetchone()[0]
+            total_pages = (product_count + per_page - 1) // per_page
+
             products = cur.execute(
                 """
                 SELECT sku, name, description, price, ean
                 FROM product
-                ORDER BY name;
+                ORDER BY name DESC
+                LIMIT %s OFFSET %s;
                 """,
-                {},
+                (per_page, offset),
             ).fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
+
+    pagination = Pagination(page=page, per_page=per_page, total=product_count, css_framework='bootstrap4')
 
     # API-like response is returned to customers that request JSON explicitly (e.g., fetch)
     if (
@@ -429,7 +439,7 @@ def product_index():
     ):
         return jsonify(products)
 
-    return render_template("product/index.html", products=products)
+    return render_template("product/index.html", products=products, pagination=pagination)
 
 
 @app.post("/products/<sku>/price")
