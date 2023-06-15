@@ -16,3 +16,15 @@ INSERT INTO pay(cust_no, order_no)
 VALUES (SELECT cust_no FROM orders WHERE order_no = %(order_no)s, %(order_no)s);
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+Realizar encomendas
+
+INSERT INTO orders(order_no, cust_no, date) 
+VALUES ((SELECT order_no FROM orders ORDER BY order_no DESC LIMIT 1)+1,
+        %(cust_no)s,
+        %(date)s);
+
+INSERT INTO contains(order_no, sku, qty)
+VALUES ((SELECT order_no FROM orders ORDER BY order_no DESC LIMIT 1),
+        %(sku)s,
+        %(qty)s);
