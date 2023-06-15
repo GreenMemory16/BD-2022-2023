@@ -1,0 +1,18 @@
+Simular pagamento de encomenda
+
+Listar encomendas do cliente por pagar (presumindo que clientes só podem pagar encomendas feitas por si mesmo)
+
+SELECT order_no, date
+FROM orders
+WHERE cust_no = %(cust_no)s
+AND WHERE NOT EXISTS
+(SELECT *
+    FROM pay
+    WHERE cust_no = %(cust_no)s);
+
+Pagar encomenda:
+
+INSERT INTO pay(cust_no, order_no)
+VALUES (SELECT cust_no FROM orders WHERE order_no = %(order_no)s, %(order_no)s);
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
