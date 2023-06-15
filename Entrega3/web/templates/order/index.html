@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-<h1>{% block title %}Customers{% endblock %}</h1>
+<h1>{% block title %}Orders{% endblock %}</h1>
 
 {% block content %}
   {% for ord in orders %}
@@ -12,7 +12,12 @@
         </div>
       </header>
 
-      <a class="action"">Add Products</a>
+      <ul>
+        {% for product in orders if product['order_no'] == ord['order_no'] %}
+          <li>{{ product['product_name'] }} - Quantity: {{ product['qty'] }}</li>
+        {% endfor %}
+      </ul>
+
     </article>
     {% if not loop.last %}
       <hr>

@@ -117,11 +117,12 @@ def order_index():
         with conn.cursor(row_factory=namedtuple_row) as cur:
             orders = cur.execute(
                 """
-                SELECT order_no, cust_no, date
-                FROM orders
-                ORDER BY order_no ASC;
-                """,
-                {},
+                SELECT o.order_no, o.cust_no, o.date, p.name AS product_name, c.qty
+                FROM orders o
+                JOIN contains c ON o.order_no = c.order_no
+                JOIN product p ON c.SKU = p.SKU
+                ORDER BY o.order_no ASC;
+                """
             ).fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
 
@@ -161,7 +162,6 @@ def order_create(cust_no):
 
                 # Insert the products into the contains table
                 i = 1
-                print("HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
                 for key, value in request.form.items():
                     print(key, value)
                     if key.startswith("sku-"):
