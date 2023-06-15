@@ -237,19 +237,8 @@ def product_delete(sku):
         with conn.cursor(row_factory=namedtuple_row) as cur:
             cur.execute(
                 """
-                WITH deleted_suppliers AS (
-                SELECT tin
-                FROM supplier
-                WHERE sku = %(sku)s
-                )
-                DELETE FROM delivery
-                WHERE tin IN (SELECT tin FROM deleted_suppliers);
-                """,
-                {"sku": sku},
-            )
-            cur.execute(
-                """
-                DELETE FROM supplier
+                UPDATE supplier
+                SET sku = NULL
                 WHERE sku = %(sku)s;
                 """,
                 {"sku": sku},
