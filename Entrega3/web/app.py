@@ -357,6 +357,33 @@ def supplier_create():
     else:
         return render_template("supplier/create.html")
 
+#delete supplier 
+@app.route("/supplier/<tin>/delete", methods=("POST",))
+def supplier_delete(tin):
+    """Delete the supplier."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute(
+                """
+                DELETE FROM delivery
+                WHERE tin = %(tin)s;
+                """,
+                {"tin": tin},
+            )
+            cur.execute(
+                """
+                DELETE FROM supplier
+                WHERE tin = %(tin)s;
+                """,
+                {"tin": tin},
+            )
+        conn.commit()
+    return redirect(url_for("supplier_index"))
+
+
+    
+
 @app.get("/supplier")
 def supplier_index():
     """Show all the products, most recent first."""

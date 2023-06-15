@@ -12,6 +12,13 @@
         </div>
       </header>
       <p class="body">{{ sup['address'] }}</p>
+
+      <div class="update_delete_buttons">
+        <form action="{{ url_for('supplier_delete', tin=sup['tin']) }}" method="post">
+          <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+        </form>
+      </div>
+      
     </article>
     {% if not loop.last %}
       <hr>
