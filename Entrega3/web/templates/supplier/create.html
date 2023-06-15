@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Supplier Registration{% endblock %}</h1>
-{% endblock %}
+<h1>{% block title %}Supplier Registration{% endblock %}</h1>
 
 {% block content %}
 <form action = "{{ url_for('supplier_create') }}" method="post">

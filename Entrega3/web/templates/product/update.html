@@ -5,7 +5,8 @@
 {% block content %}
 <header>
 	<div>
-	  <div class="about">Product {{ prod['sku'] }}</div>
+    <p></p>
+	  <div class="about"><strong>Product {{ prod['sku'] }}</strong></div>
 	</div>
 </header>
   <form action="{{ url_for('product_update', sku=prod['sku']) }}" method="post">

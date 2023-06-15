@@ -4,11 +4,11 @@
 
 {% block content %}
 <header>
+  <p></p>
 	<div>
-	  <div class="about">Customer number {{ cust['cust_no'] }}</div>
+	  <div class="about"><strong>Customer number {{ cust['cust_no'] }}</strong></div>
 	</div>
 </header>
-  <hr>
   <p class="body">Email: {{ cust['email'] }}</p>
   <p class="body">Phone: {{ cust['phone'] }}</p>
   <p class="body">Address: {{ cust['address'] }}</p>

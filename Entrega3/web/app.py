@@ -204,7 +204,7 @@ def order_create(cust_no):
                             conn.commit()
                         i += 1
 
-        return redirect(url_for("customer_info", cust_no=cust_no))
+        return redirect(url_for("main_page", cust_no=cust_no))
     else:
         return render_template("order/create.html", cust_no=cust_no)
 
