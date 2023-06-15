@@ -53,17 +53,26 @@ def main_page():
 def customer_index():
     """Show all the customers, most recent first."""
 
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    per_page = 10
+
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute("SELECT COUNT(*) FROM customer;")
+            customers_count = cur.fetchone()[0]
+            total_pages = (customers_count + per_page - 1) // per_page
             customers = cur.execute(
                 """
                 SELECT cust_no, name, email
                 FROM customer
-                ORDER BY cust_no DESC;
+                ORDER BY cust_no DESC
+                LIMIT %s OFFSET %s;
                 """,
-                {},
+                (per_page, offset),
             ).fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
+
+    pagination = Pagination(page=page, per_page=per_page, total=customers_count, css_framework='bootstrap4')
 
     # API-like response is returned to customers that request JSON explicitly (e.g., fetch)
     if (
@@ -72,7 +81,7 @@ def customer_index():
     ):
         return jsonify(customers)
 
-    return render_template("customer/index.html", customers=customers)
+    return render_template("customer/index.html", customers=customers, pagination=pagination)
 
 # funciton to create a new product
 @app.route("/products/create", methods=("POST", "GET"))
