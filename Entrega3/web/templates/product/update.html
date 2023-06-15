@@ -8,7 +8,7 @@
 	  <div class="about">Product {{ prod['sku'] }}</div>
 	</div>
 </header>
-  <form action="{{ url_for('product_delete', sku=prod['sku']) }}" method="post">
+  <form action="{{ url_for('product_update', sku=prod['sku']) }}" method="post">
     <label for="description">Description</label>
     <input name="description" id="description" type="text" required minlength="1" maxlength="253" value="{{ prod['description'] }}"">
 	  <label for="price">Price</label>
