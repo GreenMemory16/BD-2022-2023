@@ -135,14 +135,12 @@ def order_index():
     return render_template("order/index.html", orders=orders)
 
 
-
-
-
-@app.route("/customer/<cust_no>/create", methods=("POST", "GET"))
+@app.route("/customers/<cust_no>/order", methods=("POST", "GET"))
 def order_create(cust_no):
     """Create new order."""
 
     if request.method == "POST":
+        print("Creating order... for customer: ", cust_no)
         date = request.form["date"]
 
         with pool.connection() as conn:
@@ -159,10 +157,30 @@ def order_create(cust_no):
                 """
                 params = {"cust_no": cust_no, "date": date}
                 cur.execute(query, params)
-            conn.commit()
-        return redirect(url_for("order_index"))
+                conn.commit()
+
+                # Insert the products into the contains table
+                i = 1
+                print("HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+                for key, value in request.form.items():
+                    print(key, value)
+                    if key.startswith("sku-"):
+                        sku = value
+                        quantity = int(request.form.get(f"quantity-{i}"))
+
+                        if sku and quantity > 0:
+                            product_query = """
+                                INSERT INTO contains (order_no, SKU, qty)
+                                VALUES ((SELECT MAX(order_no) FROM orders), %(sku)s, %(qty)s);
+                            """
+                            product_params = {"sku": sku, "qty": quantity}
+                            cur.execute(product_query, product_params)
+                            conn.commit()
+                        i += 1
+
+        return redirect(url_for("customer_info", cust_no=cust_no))
     else:
-        return render_template("order/create.html")
+        return render_template("order/create.html", cust_no=cust_no)
 
 @app.route("/customers/create", methods=("POST", "GET"))
 def customer_create():
@@ -220,6 +238,7 @@ def product_info(sku):
 @app.route("/customers/<cust_no>", methods=("POST", "GET"))
 def customer_info(cust_no):
     """Show customer info."""
+    print(cust_no)
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
             cust = cur.execute(

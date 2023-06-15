@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Order Creation{% endblock %}</h1>
+  <h1>{% block title %}Order Creation for {{ cust_no }}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -10,10 +10,8 @@
     <input name="date" id="date" type="date" required>
 
     <h2>Add Products</h2>
-    <label for="sku">SKU</label>
-    <input name="sku" id="sku" type="text" required>
-    <label for="quantity">Quantity</label>
-    <input name="quantity" id="quantity" type="number" required>
+    <div id="sku"></div>
+  
     <button type="button" onclick="addProduct()">Add Product</button>
     
 
@@ -23,39 +21,22 @@
 </form>
 
 <script>
+  var numberOfProducts = 0;
+
   function addProduct() {
-      var sku = document.getElementById("sku").value;
-      var quantity = document.getElementById("quantity").value;
+      var sku = document.getElementById("sku");
+      numberOfProducts++;
+      
+      let newDiv = document.createElement("div");
 
-      // Perform additional logic if needed, e.g., validate inputs
+      newDiv.innerHTML = `
+        <label for="sku-${numberOfProducts}">SKU</label>
+        <input name="sku-${numberOfProducts}" id="sku-${numberOfProducts}" type="text" required>
+        <label for="quantity-${numberOfProducts}">Quantity</label>
+        <input name="quantity-${numberOfProducts}" id="quantity-${numberOfProducts}" type="number" required>
+      `;
 
-      // Append the product details to a list or perform other actions
-      var payload = {
-            sku: sku,
-            quantity: quantity
-      };
-
-        // Send the AJAX request to the server
-      fetch('/add_product', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(data => {
-            // Handle the response from the server
-          console.log(data);
-            // You can perform additional actions here, such as updating the UI
-      })
-      .catch(error => {
-          console.error('Error:', error);
-      });
-
-      // Clear the input fields
-      document.getElementById("sku").value = "";
-      document.getElementById("quantity").value = "";
+      sku.appendChild(newDiv);
   }
 </script>
 
