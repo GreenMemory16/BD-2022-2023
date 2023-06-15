@@ -12,7 +12,8 @@
         </div>
       </header>
 
-      <a class="action">Pay Order</a>
+      <a class="action" href="{{ url_for('pay_order', order_no=ord['order_no']) }}">Pay Order</a>
+      
     </article>
     {% if not loop.last %}
       <hr>

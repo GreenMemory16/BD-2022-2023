@@ -404,7 +404,24 @@ def list_unpaid_orders(cust_no):
             ).fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
 
-    return render_template("order/pay.html", orders=orders)
+    return render_template("order/pay.html")
+
+@app.post("/customers/<cust_no>/pay")
+def pay_order(order_no):
+    """Pay an order."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute(
+                """
+                INSERT INTO pay(cust_no, order_no)
+                VALUES (SELECT cust_no FROM orders WHERE order_no = %(order_no)s, %(order_no)s);
+                """,
+                {"order_no": order_no,}
+            )
+        conn.commit()
+    return redirect(url_for("customer_index"))
+
 
 @app.get("/products")
 def product_index():
