@@ -13,8 +13,8 @@
       </header>
 
       <ul>
-        {% for product in orders if product['order_no'] == ord['order_no'] %}
-          <li>{{ product['product_name'] }} - Quantity: {{ product['qty'] }}</li>
+        {% for product in ord['products'] %}
+          <li>{{ product['name'] }} (Quantity: {{ product['qty'] }})</li>
         {% endfor %}
       </ul>
 
@@ -23,4 +23,7 @@
       <hr>
     {% endif %}
   {% endfor %}
+  
+  {{ pagination.info }}
+  {{ pagination.links }}
 {% endblock %}

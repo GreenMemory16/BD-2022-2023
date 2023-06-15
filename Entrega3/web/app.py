@@ -14,7 +14,7 @@ from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
 from datetime import datetime
-
+from flask_paginate import Pagination, get_page_args
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://me:me@localhost/me")
@@ -111,20 +111,37 @@ def product_create():
 
 @app.route("/orders", methods=("GET",))
 def order_index():
-    """Show all the orders"""
+    """Show all the orders with products and quantities"""
+
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    page = int(page)
+    per_page = int(per_page)
+    offset = (page - 1) * per_page
 
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
-            orders = cur.execute(
+            cur.execute("SELECT COUNT(*) FROM orders;")
+            orders_count = cur.fetchone()[0]
+            total_pages = (orders_count + per_page - 1) // per_page
+
+            cur.execute(
                 """
-                SELECT o.order_no, o.cust_no, o.date, p.name AS product_name, c.qty
+                SELECT o.order_no, o.cust_no, o.date, 
+                    array_agg(json_build_object('name', p.name, 'qty', c.qty)) AS products
                 FROM orders o
                 JOIN contains c ON o.order_no = c.order_no
                 JOIN product p ON c.SKU = p.SKU
-                ORDER BY o.order_no ASC;
-                """
-            ).fetchall()
+                GROUP BY o.order_no, o.cust_no, o.date
+                ORDER BY o.order_no ASC
+                LIMIT %s OFFSET %s;
+                """,
+                (per_page, offset),
+            )
+            orders = cur.fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
+
+    pagination = Pagination(page=page, per_page=per_page, total=orders_count, css_framework='bootstrap4')
+
 
     # API-like response is returned to orders that request JSON explicitly (e.g., fetch)
     if (
@@ -133,7 +150,7 @@ def order_index():
     ):
         return jsonify(orders)
 
-    return render_template("order/index.html", orders=orders)
+    return render_template("order/index.html", orders=orders, pagination=pagination)
 
 
 @app.route("/customers/<cust_no>/order", methods=("POST", "GET"))
