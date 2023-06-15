@@ -544,18 +544,28 @@ def supplier_delete(tin):
 @app.get("/supplier")
 def supplier_index():
     """Show all the products, most recent first."""
+    
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    per_page = 10
 
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute("SELECT COUNT(*) FROM supplier;")
+            supplier_count = cur.fetchone()[0]
+            total_pages = (supplier_count + per_page - 1) // per_page
+
             supplier = cur.execute(
                 """
-                SELECT tin, name, address, sku
+                SELECT tin, name, address, sku, date
                 FROM supplier
-                ORDER BY name;
+                ORDER BY tin DESC
+                LIMIT %s OFFSET %s;
                 """,
-                {},
+                (per_page, offset),
             ).fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
+
+    pagination = Pagination(page=page, per_page=per_page, total=supplier_count, css_framework='bootstrap4')
 
     # API-like response is returned to customers that request JSON explicitly (e.g., fetch)
     if (
@@ -564,7 +574,7 @@ def supplier_index():
     ):
         return jsonify(supplier)
 
-    return render_template("supplier/index.html", supplier=supplier)
+    return render_template("supplier/index.html", supplier=supplier, pagination=pagination)
 
 @app.route("/ping", methods=("GET",))
 def ping():
