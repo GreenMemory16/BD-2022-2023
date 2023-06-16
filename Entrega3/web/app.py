@@ -138,8 +138,8 @@ def order_index():
                 SELECT o.order_no, o.cust_no, o.date, 
                     array_agg(json_build_object('name', p.name, 'qty', c.qty)) AS products
                 FROM orders o
-                JOIN contains c ON o.order_no = c.order_no
-                JOIN product p ON c.SKU = p.SKU
+                LEFT JOIN contains c ON o.order_no = c.order_no
+                LEFT JOIN product p ON c.SKU = p.SKU
                 GROUP BY o.order_no, o.cust_no, o.date
                 ORDER BY o.order_no ASC
                 LIMIT %s OFFSET %s;
