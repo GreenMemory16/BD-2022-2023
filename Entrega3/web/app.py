@@ -420,21 +420,39 @@ def product_update(sku):
 @app.route("/customers/<cust_no>/list", methods=("POST", "GET"))
 def list_unpaid_orders(cust_no):
     """List unpaid orders made by this customer."""
+
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    page = int(page)
+    per_page = int(per_page)
+    offset = (page - 1) * per_page
+
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute("""SELECT COUNT(*)
+                        FROM orders o
+                        LEFT JOIN pay p ON o.order_no = p.order_no
+                        WHERE o.cust_no = %(cust_no)s
+                        AND p.order_no IS NULL;""", 
+                        {"cust_no": cust_no})
+            orders_count = cur.fetchone()[0]
+            total_pages = (orders_count + per_page - 1) // per_page
+
             orders = cur.execute(
                 """
                 SELECT o.order_no, o.date
                 FROM orders o
                 LEFT JOIN pay p ON o.order_no = p.order_no
                 WHERE o.cust_no = %(cust_no)s
-                AND p.order_no IS NULL;
+                AND p.order_no IS NULL
+                LIMIT %(per_page)s OFFSET %(offset)s;
                 """,
-                {"cust_no": cust_no},
+                {"cust_no": cust_no, "per_page": per_page, "offset": offset}
             ).fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
 
-    return render_template("order/pay.html", orders=orders, cust_no=cust_no)
+    pagination = Pagination(page=page, per_page=per_page, total=orders_count, css_framework='bootstrap4')
+
+    return render_template("order/pay.html", orders=orders, cust_no=cust_no, pagination=pagination)
 
 @app.route("/customers/<cust_no>/list/<order_no>/pay", methods=("POST",))
 def pay_order(order_no, cust_no):
