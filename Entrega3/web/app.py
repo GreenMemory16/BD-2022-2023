@@ -387,7 +387,7 @@ def product_update(sku):
         conn.commit()
     return redirect(url_for("product_index"))
 
-@app.route("/customers/<cust_no>/pay", methods=("POST", "GET"))
+@app.route("/customers/<cust_no>/list", methods=("POST", "GET"))
 def list_unpaid_orders(cust_no):
     """List unpaid orders made by this customer."""
     with pool.connection() as conn:
@@ -404,10 +404,10 @@ def list_unpaid_orders(cust_no):
             ).fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
 
-    return render_template("order/pay.html")
+    return render_template("order/pay.html", orders=orders, cust_no=cust_no)
 
-@app.post("/customers/<cust_no>/pay")
-def pay_order(order_no):
+@app.route("/customers/<cust_no>/list/pay", methods=("POST",))
+def pay_order(order_no, cust_no):
     """Pay an order."""
 
     with pool.connection() as conn:
@@ -415,9 +415,9 @@ def pay_order(order_no):
             cur.execute(
                 """
                 INSERT INTO pay(cust_no, order_no)
-                VALUES (SELECT cust_no FROM orders WHERE order_no = %(order_no)s, %(order_no)s);
+                VALUES (%(cust_no)s, %(order_no)s);
                 """,
-                {"order_no": order_no,}
+                {"order_no": order_no, "cust_no": cust_no}
             )
         conn.commit()
     return redirect(url_for("customer_index"))
@@ -489,7 +489,7 @@ def order_add(order_no):
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
                 query = """
-                    INSERT INTO contains (order_no, sku, quantity)
+                    INSERT INTO contains (order_no, sku, qty)
                     VALUES (%(order_no)s, %(sku)s, %(quantity)s);
                 """
                 params = {"order_no": order_no, "sku": sku, "quantity": quantity}

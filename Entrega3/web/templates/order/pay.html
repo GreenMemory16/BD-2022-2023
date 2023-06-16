@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-<h1>{% block title %}Customers{% endblock %}</h1>
+<h1>{% block title %}Unpaid orders made by customer{% endblock %}</h1>
 
 {% block content %}
   {% for ord in orders %}
@@ -11,9 +11,11 @@
           <div class="about">Order number {{ ord['order_no'] }}</div>
         </div>
       </header>
-
-      <a class="action" href="{{ url_for('pay_order', order_no=ord['order_no']) }}">Pay Order</a>
-      
+      <div class="pay_buttons">
+        <form action="{{ url_for('pay_order', order_no=ord['order_no'], cust_no = cust_no) }}" method="post">
+          <input class="primary" type="submit" value="Pay" onclick="return confirm('Are you sure?');">
+        </form>
+      </div>
     </article>
     {% if not loop.last %}
       <hr>
