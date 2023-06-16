@@ -13,7 +13,6 @@ from flask import url_for
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
-from datetime import datetime
 from flask_paginate import Pagination, get_page_args
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
