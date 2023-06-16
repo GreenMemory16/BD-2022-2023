@@ -414,8 +414,8 @@ def pay_order(order_no, cust_no):
         with conn.cursor(row_factory=namedtuple_row) as cur:
             cur.execute(
                 """
-                INSERT INTO pay(cust_no, order_no)
-                VALUES (%(cust_no)s, %(order_no)s);
+                INSERT INTO pay(order_no, cust_no)
+                VALUES (%(order_no)s, %(cust_no)s);
                 """,
                 {"order_no": order_no, "cust_no": cust_no}
             )
