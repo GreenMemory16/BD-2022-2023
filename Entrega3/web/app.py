@@ -43,6 +43,7 @@ dictConfig(
 
 app = Flask(__name__)
 log = app.logger
+app.secret_key = 'super secret key'
 
 
 @app.route("/", methods=("GET",))
@@ -97,6 +98,12 @@ def product_create():
 
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
+                cur.execute("""SELECT product FROM product WHERE sku = %(sku)s;""", {"sku": sku})
+                if cur.fetchone() is not None:
+                    error = f"Product with sku \"{sku}\" already exists."
+                    flash(error)
+                    return render_template("product/create.html")
+                
                 query = """
                     INSERT INTO product
                     VALUES(
@@ -111,6 +118,13 @@ def product_create():
                     description = None
                 if not ean:
                     ean = None
+                else:
+                    cur.execute("""SELECT product FROM product WHERE ean = %(ean)s;""", {"ean": ean})
+                    if cur.fetchone() is not None:
+                        error = f"Product with ean \"{ean}\" already exists."
+                        flash(error)
+                        return render_template("product/create.html")
+                    
                 params = {"sku": sku, "name": name, "description": description, "price": price, "ean": ean}
                 cur.execute(query, params)
             conn.commit()
@@ -172,6 +186,16 @@ def order_create(cust_no):
 
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
+                for key, value in request.form.items():
+                    if key.startswith("sku-"):
+                        sku = value
+                        if sku:
+                            cur.execute("""SELECT product FROM product WHERE sku = %(sku)s;""", {"sku": sku})
+                            if cur.fetchone() is None:
+                                error = f"Product with sku \"{sku}\" does not exist."
+                                flash(error)
+                                return render_template("order/create.html", cust_no=cust_no)
+                
                 query = """
                     INSERT INTO orders
                     VALUES(
@@ -220,6 +244,12 @@ def customer_create():
 
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
+                cur.execute("""SELECT customer FROM customer WHERE email = %(email)s;""", {"email": email})
+                if cur.fetchone() is not None:
+                    error = f"Customer with email \"{email}\" already exists."
+                    flash(error)
+                    return render_template("customer/create.html")
+
                 query = """
                     INSERT INTO customer
                     VALUES(
@@ -530,6 +560,19 @@ def supplier_create():
 
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
+                cur.execute("""SELECT supplier FROM supplier WHERE tin = %(tin)s;""", {"tin": tin})
+                if cur.fetchone() is not None:
+                    error = f"Product with tin \"{tin}\" already exists."
+                    flash(error)
+                    return render_template("supplier/create.html")
+                
+                if sku is not None:
+                    cur.execute("""SELECT product FROM product WHERE sku = %(sku)s;""", {"sku": sku})
+                    if cur.fetchone() is None:
+                        error = f"Product with sku \"{sku}\" does not exist."
+                        flash(error)
+                        return render_template("supplier/create.html")
+                
                 query = """
                     INSERT INTO supplier (tin, name, address, sku, date)
                     VALUES (%(tin)s, %(name)s, %(address)s, %(sku)s, %(date)s);
