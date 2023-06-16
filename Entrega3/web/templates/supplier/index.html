@@ -2,6 +2,10 @@
 
 <h1>{% block title %}Suppliers{% endblock %}</h1>
 
+{% block list %}
+<li><a href="{{ url_for('main_page') }}">Back</a>
+{% endblock %}
+
 {% block content %}
   {% for sup in supplier %}
     <article class="post">

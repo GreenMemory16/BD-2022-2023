@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
-  <h1>{% block title %}Order Creation for {{ cust_no }}{% endblock %}</h1>
+<h1>{% block title %}Order Creation for {{ cust_no }}{% endblock %}</h1>
+
+{% block list %}
+<li><a href="{{ url_for('customer_index') }}">Back</a>
+{% endblock %}
 
 {% block content %}
 <form action = "{{ url_for('order_create', cust_no=cust_no) }}" method="post">

@@ -4,13 +4,10 @@
 <nav>
   <h1>{{ self.title() }}</h1>
   <ul>
-    <li><a href="{{ url_for('main_page') }}">Menu</a>
+    {% block list %}{% endblock %}
   </ul>
 </nav>
   <section class="content">
-    <header>
-    {% block header %}{% endblock %}
-    </header>
     {% for message in get_flashed_messages() %}
       <div class="flash">{{ message }}</div>
     {% endfor %}

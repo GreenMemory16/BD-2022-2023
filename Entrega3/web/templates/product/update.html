@@ -2,6 +2,10 @@
 
 <h1>{% block title %}{{ prod['name'] }}{% endblock %}</h1>
 
+{% block list %}
+<li><a href="{{ url_for('product_index') }}">Back</a>
+{% endblock %}
+
 {% block content %}
 <header>
 	<div>

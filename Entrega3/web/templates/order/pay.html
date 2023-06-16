@@ -2,6 +2,10 @@
 
 <h1>{% block title %}Orders to Pay{% endblock %}</h1>
 
+{% block list %}
+<li><a href="{{ url_for('customer_index') }}">Back</a>
+{% endblock %}
+
 {% block content %}
   {% for ord in orders %}
     <article class="post">

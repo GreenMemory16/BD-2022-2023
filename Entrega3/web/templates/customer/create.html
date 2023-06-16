@@ -2,6 +2,10 @@
 
 <h1>{% block title %}Customer Registration{% endblock %}</h1>
 
+{% block list %}
+<li><a href="{{ url_for('main_page') }}">Back</a>
+{% endblock %}
+
 {% block content %}
 <form action = "{{ url_for('customer_create') }}" method="post">
     <label for="name">Customer Name</label>
