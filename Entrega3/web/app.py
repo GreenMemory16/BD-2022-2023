@@ -574,8 +574,14 @@ def supplier_create():
         sku = request.form["sku"]
         date = request.form["date"]
 
+        if not sku:
+            print("sku is none")
+
+        if not date:
+            print("date is none")
+            date = None
         # Convert the date string to a datetime object
-        if len(date.split("-")[0]) > 4:
+        elif len(date.split("-")[0]) > 4:
             error = f"Invalid year. Please insert a year in the format YYYY."
             flash(error)
             return render_template("supplier/create.html")
@@ -584,22 +590,27 @@ def supplier_create():
             with conn.cursor(row_factory=namedtuple_row) as cur:
                 cur.execute("""SELECT supplier FROM supplier WHERE tin = %(tin)s;""", {"tin": tin})
                 if cur.fetchone() is not None:
-                    error = f"Product with tin \"{tin}\" already exists."
+                    error = f"Supplier with tin \"{tin}\" already exists."
                     flash(error)
                     return render_template("supplier/create.html")
                 
-                if sku is not None:
+                query = """
+                    INSERT INTO supplier
+                    VALUES (%(tin)s, %(name)s, %(address)s
+                """
+                params = {"tin": tin, "name": name, "address": address}
+                if sku:
                     cur.execute("""SELECT product FROM product WHERE sku = %(sku)s;""", {"sku": sku})
                     if cur.fetchone() is None:
                         error = f"Product with sku \"{sku}\" does not exist."
                         flash(error)
                         return render_template("supplier/create.html")
-                
-                query = """
-                    INSERT INTO supplier (tin, name, address, sku, date)
-                    VALUES (%(tin)s, %(name)s, %(address)s, %(sku)s, %(date)s);
-                """
-                params = {"tin": tin, "name": name, "address": address, "sku": sku, "date": date}
+                    query += ", %(sku)s"
+                    params['sku'] = sku
+                if date:
+                    query += ", %(date)s"
+                    params['date'] = date
+                query += ");"
                 cur.execute(query, params)
             conn.commit()
         return redirect(url_for("supplier_index"))
