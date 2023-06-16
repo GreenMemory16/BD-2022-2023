@@ -574,18 +574,6 @@ def supplier_create():
         sku = request.form["sku"]
         date = request.form["date"]
 
-        if not sku:
-            print("sku is none")
-
-        if not date:
-            print("date is none")
-            date = None
-        # Convert the date string to a datetime object
-        elif len(date.split("-")[0]) > 4:
-            error = f"Invalid year. Please insert a year in the format YYYY."
-            flash(error)
-            return render_template("supplier/create.html")
-
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
                 cur.execute("""SELECT supplier FROM supplier WHERE tin = %(tin)s;""", {"tin": tin})
@@ -608,6 +596,10 @@ def supplier_create():
                     query += ", %(sku)s"
                     params['sku'] = sku
                 if date:
+                    if len(date.split("-")[0]) > 4:
+                        error = f"Invalid year. Please insert a year in the format YYYY."
+                        flash(error)
+                        return render_template("supplier/create.html")
                     query += ", %(date)s"
                     params['date'] = date
                 query += ");"
