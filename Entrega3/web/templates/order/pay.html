@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-<h1>{% block title %}Unpaid orders made by customer{% endblock %}</h1>
+<h1>{% block title %}Orders to Pay{% endblock %}</h1>
 
 {% block content %}
   {% for ord in orders %}
@@ -13,7 +13,7 @@
       </header>
       <div class="pay_buttons">
         <form action="{{ url_for('pay_order', order_no=ord['order_no'], cust_no = cust_no) }}" method="post">
-          <input class="primary" type="submit" value="Pay" onclick="return confirm('Are you sure?');">
+          <input class="primary" type="submit" value="Pay">
         </form>
       </div>
     </article>

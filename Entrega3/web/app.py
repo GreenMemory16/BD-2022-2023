@@ -406,7 +406,7 @@ def list_unpaid_orders(cust_no):
 
     return render_template("order/pay.html", orders=orders, cust_no=cust_no)
 
-@app.route("/customers/<cust_no>/list/pay", methods=("POST",))
+@app.route("/customers/<cust_no>/list/<order_no>/pay", methods=("POST",))
 def pay_order(order_no, cust_no):
     """Pay an order."""
 
