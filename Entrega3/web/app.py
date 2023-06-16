@@ -184,6 +184,11 @@ def order_create(cust_no):
         print("Creating order... for customer: ", cust_no)
         date = request.form["date"]
 
+        if len(date.split("-")[0]) > 4:
+            error = f"Invalid year. Please insert a year in the format YYYY."
+            flash(error)
+            return render_template("order/create.html", cust_no=cust_no)
+
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
                 for key, value in request.form.items():
@@ -571,10 +576,10 @@ def supplier_create():
         date = request.form["date"]
 
         # Convert the date string to a datetime object
-        if date:
-            date_obj = datetime.strptime(date, "%Y-%m-%d")
-        else:
-            date_obj = None
+        if len(date.split("-")[0]) > 4:
+            error = f"Invalid year. Please insert a year in the format YYYY."
+            flash(error)
+            return render_template("supplier/create.html")
 
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
@@ -595,7 +600,7 @@ def supplier_create():
                     INSERT INTO supplier (tin, name, address, sku, date)
                     VALUES (%(tin)s, %(name)s, %(address)s, %(sku)s, %(date)s);
                 """
-                params = {"tin": tin, "name": name, "address": address, "sku": sku, "date": date_obj}
+                params = {"tin": tin, "name": name, "address": address, "sku": sku, "date": date}
                 cur.execute(query, params)
             conn.commit()
         return redirect(url_for("supplier_index"))
